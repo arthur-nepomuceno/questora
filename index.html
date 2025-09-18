@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questora - Quiz de Futebol</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎯 Questora</h1>
+            <p>Teste seus conhecimentos em diferentes áreas!</p>
+        </header>
+
+        <!-- Tela de início -->
+        <div id="start-screen" class="screen active">
+            <div class="welcome-card">
+                <h2>Bem-vindo ao Questora!</h2>
+                <p>Escolha uma categoria para testar seus conhecimentos:</p>
+                
+                <div class="category-selection">
+                    <div class="category-card" data-category="futebol">
+                        <div class="category-icon">⚽</div>
+                        <h3>Futebol</h3>
+                    </div>
+                    
+                    <div class="category-card" data-category="historia">
+                        <div class="category-icon">📚</div>
+                        <h3>História do Brasil</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela do quiz -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <div class="progress-info">
+                    <span id="question-counter">Pergunta 1 de 10</span>
+                    <span id="score-display">Acertos: 0</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="question-card">
+                <div class="difficulty-badge" id="difficulty-badge">Fácil</div>
+                <h3 id="question-text">Pergunta aqui...</h3>
+                
+                <div class="options-container" id="options-container">
+                    <!-- Opções serão inseridas dinamicamente -->
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tela de resultados -->
+        <div id="results-screen" class="screen">
+            <div class="results-card">
+                <h2>🎉 Quiz Finalizado!</h2>
+                <div class="score-summary">
+                    <div class="score-circle">
+                        <span id="final-score">0</span>
+                        <span>/10</span>
+                    </div>
+                    <p id="score-message">Mensagem de resultado</p>
+                </div>
+                
+                <div class="results-details">
+                    <div class="stat">
+                        <span class="stat-label">Acertos:</span>
+                        <span id="correct-count" class="stat-value correct">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Erros:</span>
+                        <span id="wrong-count" class="stat-value wrong">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Taxa de acerto:</span>
+                        <span id="accuracy-rate" class="stat-value">0%</span>
+                    </div>
+                </div>
+
+                <div class="results-actions">
+                    <button id="restart-btn" class="btn btn-primary">Fazer Novo Quiz</button>
+                    <button id="review-btn" class="btn btn-secondary">Revisar Respostas</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de revisão -->
+        <div id="review-screen" class="screen">
+            <div class="review-header">
+                <h2>📋 Revisão das Respostas</h2>
+                <button id="back-to-results" class="btn btn-secondary">Voltar aos Resultados</button>
+            </div>
+            
+            <div class="review-list" id="review-list">
+                <!-- Respostas serão inseridas dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

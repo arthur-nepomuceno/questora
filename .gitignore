@@ -1,0 +1,21 @@
+# Pasta de perguntas (não deve ser incluída no repositório)
+perguntas/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+*.temp
+*~
+
+# Logs
+*.log
+
+# Node modules (caso seja adicionado no futuro)
+node_modules/
+
+# Arquivos de configuração local
+.env
+.env.local
