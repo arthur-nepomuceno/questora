@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🎯 Questora</h1>
+            <h1>🎯 SoPerguntas</h1>
             <p>Teste seus conhecimentos em diferentes áreas!</p>
         </header>
 
@@ -38,7 +38,13 @@
             <div class="quiz-header">
                 <div class="progress-info">
                     <span id="question-counter">Pergunta 1 de 10</span>
-                    <span id="score-display">Acertos: 0</span>
+                    <div class="score-info">
+                        <span id="score-display">Acumulado: 0.00</span>
+                        <span id="multiplier-display">0.10x</span>
+                    </div>
+                </div>
+                <div class="points-info">
+                    <span id="points-display">Pontos por rodada: 10</span>
                 </div>
                 <div class="progress-bar">
                     <div id="progress-fill"></div>
@@ -61,10 +67,7 @@
             <div class="results-card">
                 <h2>🎉 Quiz Finalizado!</h2>
                 <div class="score-summary">
-                    <div class="score-circle">
-                        <span id="final-score">0</span>
-                        <span>/10</span>
-                    </div>
+
                     <p id="score-message">Mensagem de resultado</p>
                 </div>
                 
@@ -78,8 +81,8 @@
                         <span id="wrong-count" class="stat-value wrong">0</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Taxa de acerto:</span>
-                        <span id="accuracy-rate" class="stat-value">0%</span>
+                        <span class="stat-label">Acumulado:</span>
+                        <span id="accumulated-display" class="stat-value">0.00</span>
                     </div>
                 </div>
 

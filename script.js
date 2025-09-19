@@ -66,6 +66,9 @@ const questionsData = {
     ]
 };
 
+// Vetor de multiplicadores fixo
+const MULTIPLIERS = [0.10, 0.20, 0.30, 0.40, 0.60, 1.00, 1.40, 2.00, 3.00, 6.00];
+
 // Estado do quiz
 let currentQuiz = {
     selectedQuestions: [],
@@ -73,7 +76,11 @@ let currentQuiz = {
     userAnswers: [],
     correctAnswers: 0,
     wrongAnswers: 0,
-    selectedCategory: null
+    selectedCategory: null,
+    accumulatedScore: 0,  // Pontuação acumulada
+    currentMultiplierIndex: 0,  // Índice atual do multiplicador
+    maxErrors: 3,
+    currentErrors: 0
 };
 
 // Elementos DOM
@@ -94,14 +101,16 @@ function selectRandomQuestions(category) {
     // Embaralhar arrays
     const shuffle = (array) => array.sort(() => Math.random() - 0.5);
     
-    // Selecionar 2 fáceis, 5 médias e 3 difíceis
-    const selectedEasy = shuffle([...easyQuestions]).slice(0, 2);
-    const selectedMedium = shuffle([...mediumQuestions]).slice(0, 5);
+    // Selecionar 4 fáceis, 3 médias e 3 difíceis
+    const selectedEasy = shuffle([...easyQuestions]).slice(0, 4);
+    const selectedMedium = shuffle([...mediumQuestions]).slice(0, 3);
     const selectedHard = shuffle([...hardQuestions]).slice(0, 3);
 
-    // Combinar e embaralhar novamente
-    const allSelected = [...selectedEasy, ...selectedMedium, ...selectedHard];
-    return shuffle(allSelected);
+    // Combinar mantendo ordem: 4 fáceis primeiro, depois embaralhar o resto
+    const remainingQuestions = [...selectedMedium, ...selectedHard];
+    const shuffledRemaining = shuffle(remainingQuestions);
+    
+    return [...selectedEasy, ...shuffledRemaining];
 }
 
 // Função para mostrar uma tela específica
@@ -118,7 +127,11 @@ function startQuiz(category) {
         userAnswers: [],
         correctAnswers: 0,
         wrongAnswers: 0,
-        selectedCategory: category
+        selectedCategory: category,
+        accumulatedScore: 0,  // Começa com 0
+        currentMultiplierIndex: 0,  // Começa no primeiro multiplicador
+        maxErrors: 3,
+        currentErrors: 0
     };
     
     showScreen('quiz');
@@ -131,25 +144,30 @@ function displayQuestion() {
     const questionNumber = currentQuiz.currentQuestionIndex + 1;
     
     // Atualizar contadores
+    const currentMultiplier = MULTIPLIERS[currentQuiz.currentMultiplierIndex];
     document.getElementById('question-counter').textContent = `Pergunta ${questionNumber} de 10`;
-    document.getElementById('score-display').textContent = `Acertos: ${currentQuiz.correctAnswers}`;
+    document.getElementById('score-display').textContent = `Acumulado: ${currentQuiz.accumulatedScore.toFixed(2)}`;
+    document.getElementById('multiplier-display').textContent = `${currentMultiplier.toFixed(2)}x`;
     
     // Atualizar barra de progresso
     const progressFill = document.getElementById('progress-fill');
     progressFill.style.width = `${(questionNumber - 1) * 10}%`;
     
     // Atualizar pergunta
-    document.getElementById('difficulty-badge').textContent = 
-        question.dificuldade.charAt(0).toUpperCase() + question.dificuldade.slice(1);
-    document.getElementById('difficulty-badge').className = 
-        `difficulty-badge ${question.dificuldade}`;
+    // document.getElementById('difficulty-badge').textContent = 
+    //     question.dificuldade.charAt(0).toUpperCase() + question.dificuldade.slice(1);
+    // document.getElementById('difficulty-badge').className = 
+    //     `difficulty-badge ${question.dificuldade}`;
     document.getElementById('question-text').textContent = question.pergunta;
     
     // Atualizar opções
     const optionsContainer = document.getElementById('options-container');
     optionsContainer.innerHTML = '';
     
-    question.opcoes.forEach((option, index) => {
+    // Randomizar as opções de resposta
+    const shuffledOptions = [...question.opcoes].sort(() => Math.random() - 0.5);
+    
+    shuffledOptions.forEach((option, index) => {
         const optionElement = document.createElement('button');
         optionElement.className = 'option-btn';
         optionElement.textContent = option;
@@ -157,21 +175,33 @@ function displayQuestion() {
         optionsContainer.appendChild(optionElement);
     });
     
-    // Adicionar indicador de carregamento sobreposto na terceira opção
-    const loadingOverlay = document.createElement('div');
-    loadingOverlay.id = 'loading-overlay';
-    loadingOverlay.className = 'loading-overlay hidden';
-    loadingOverlay.innerHTML = `
-        <div class="spinner-overlay"></div>
-        <p>Carregando...</p>
-    `;
-    optionsContainer.appendChild(loadingOverlay);
+    // Adicionar indicador de carregamento sobreposto (se não existir)
+    let loadingOverlay = document.getElementById('loading-overlay');
+    if (!loadingOverlay) {
+        loadingOverlay = document.createElement('div');
+        loadingOverlay.id = 'loading-overlay';
+        loadingOverlay.className = 'loading-overlay hidden';
+        loadingOverlay.innerHTML = `
+            <div class="spinner-overlay"></div>
+            <p>Carregando...</p>
+        `;
+        optionsContainer.appendChild(loadingOverlay);
+    }
 }
 
 // Função para selecionar uma opção
 function selectOption(selectedOption, buttonElement) {
+    // Prevenir múltiplas execuções
+    if (buttonElement.disabled) {
+        return;
+    }
+    
     const question = currentQuiz.selectedQuestions[currentQuiz.currentQuestionIndex];
     const isCorrect = selectedOption === question.correta;
+    
+    // Desabilitar todos os botões imediatamente para evitar múltiplas seleções
+    const allButtons = document.querySelectorAll('.option-btn');
+    allButtons.forEach(btn => btn.disabled = true);
     
     // Armazenar resposta do usuário
     currentQuiz.userAnswers.push({
@@ -180,17 +210,37 @@ function selectOption(selectedOption, buttonElement) {
         isCorrect: isCorrect
     });
     
-    // Atualizar contadores
+    // Atualizar contadores e pontuação
     if (isCorrect) {
         currentQuiz.correctAnswers++;
+        // Calcular pontos: 10 * multiplicador atual
+        const currentMultiplier = MULTIPLIERS[currentQuiz.currentMultiplierIndex];
+        const pointsEarned = 10 * currentMultiplier;
+        currentQuiz.accumulatedScore += pointsEarned;
+        
+        // Avançar para o próximo multiplicador
+        if (currentQuiz.currentMultiplierIndex < MULTIPLIERS.length - 1) {
+            currentQuiz.currentMultiplierIndex++;
+        }
     } else {
         currentQuiz.wrongAnswers++;
+        currentQuiz.currentErrors++;
+        
+        // Dividir acumulado por 2 (arredondando para 2 casas decimais)
+        currentQuiz.accumulatedScore = Math.round(currentQuiz.accumulatedScore / 2 * 100) / 100;
+        
+        // Reiniciar ponteiro do vetor para o início
+        currentQuiz.currentMultiplierIndex = 0;
     }
+    
+    // Atualizar displays
+    document.getElementById('score-display').textContent = `Acumulado: ${currentQuiz.accumulatedScore.toFixed(2)}`;
+    const currentMultiplier = MULTIPLIERS[currentQuiz.currentMultiplierIndex];
+    document.getElementById('multiplier-display').textContent = `${currentMultiplier.toFixed(2)}x`;
     
     // Destacar a resposta correta e a selecionada
     const optionButtons = document.querySelectorAll('.option-btn');
     optionButtons.forEach(btn => {
-        btn.disabled = true;
         if (btn.textContent === question.correta) {
             btn.classList.add('correct');
         } else if (btn.textContent === selectedOption && !isCorrect) {
@@ -198,14 +248,24 @@ function selectOption(selectedOption, buttonElement) {
         }
     });
     
-    // Mostrar indicador de carregamento
-    showLoadingIndicator();
-    
-    // Avançar automaticamente após 3 segundos
-    setTimeout(() => {
-        hideLoadingIndicator();
-        nextQuestion();
-    }, 3000);
+    // Verificar se atingiu o máximo de erros
+    if (currentQuiz.currentErrors >= currentQuiz.maxErrors) {
+        // Encerrar rodada automaticamente
+        showLoadingIndicator();
+        setTimeout(() => {
+            hideLoadingIndicator();
+            endQuizWithPenalty();
+        }, 3000);
+    } else {
+        // Mostrar indicador de carregamento
+        showLoadingIndicator();
+        
+        // Avançar automaticamente após 3 segundos
+        setTimeout(() => {
+            hideLoadingIndicator();
+            nextQuestion();
+        }, 3000);
+    }
 }
 
 // Função para ir para a próxima pergunta
@@ -221,32 +281,51 @@ function nextQuestion() {
 
 // Função para mostrar resultados
 function showResults() {
-    const totalQuestions = currentQuiz.selectedQuestions.length;
+    const totalQuestions = currentQuiz.currentQuestionIndex;
     const correctAnswers = currentQuiz.correctAnswers;
     const wrongAnswers = currentQuiz.wrongAnswers;
-    const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
+    const accumulatedScore = currentQuiz.accumulatedScore;
+    
+    // Calcular pontuação final
+    let finalScore = accumulatedScore;
+    if (currentQuiz.currentErrors >= currentQuiz.maxErrors) {
+        // Se encerrou por 3 erros, pontuação é metade do acumulado
+        finalScore = Math.round(accumulatedScore / 2 * 100) / 100;
+    }
+    
+    const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
     
     // Atualizar elementos da tela de resultados
-    document.getElementById('final-score').textContent = correctAnswers;
+    document.getElementById('final-score').textContent = finalScore.toFixed(2);
     document.getElementById('correct-count').textContent = correctAnswers;
     document.getElementById('wrong-count').textContent = wrongAnswers;
-    document.getElementById('accuracy-rate').textContent = `${accuracy}%`;
+    document.getElementById('accumulated-display').textContent = accumulatedScore.toFixed(2);
     
-    // Mensagem baseada na performance
+    // Mensagem baseada na pontuação final
     let message = '';
-    if (accuracy >= 80) {
-        message = '🏆 Excelente! Você é um verdadeiro especialista em futebol!';
-    } else if (accuracy >= 60) {
-        message = '👍 Bom trabalho! Você tem um bom conhecimento sobre futebol!';
-    } else if (accuracy >= 40) {
+    if (finalScore >= 50) {
+        message = '🏆 Excelente! Você é um verdadeiro especialista!';
+    } else if (finalScore >= 30) {
+        message = '👍 Bom trabalho! Você tem um bom conhecimento!';
+    } else if (finalScore >= 10) {
         message = '📚 Não foi mal! Continue estudando para melhorar!';
     } else {
         message = '💪 Não desista! Pratique mais e você vai melhorar!';
     }
     
+    // Adicionar mensagem especial se encerrou por 3 erros
+    if (currentQuiz.currentErrors >= currentQuiz.maxErrors) {
+        message += ' (Rodada encerrada por atingir 3 erros)';
+    }
+    
     document.getElementById('score-message').textContent = message;
     
     showScreen('results');
+}
+
+// Função para encerrar quiz com penalidade (3 erros)
+function endQuizWithPenalty() {
+    showResults();
 }
 
 // Função para mostrar indicador de carregamento
