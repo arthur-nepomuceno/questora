@@ -147,7 +147,12 @@ function displayQuestion() {
     const currentMultiplier = MULTIPLIERS[currentQuiz.currentMultiplierIndex];
     document.getElementById('question-counter').textContent = `Pergunta ${questionNumber} de 10`;
     document.getElementById('score-display').textContent = `Acumulado: ${currentQuiz.accumulatedScore.toFixed(2)}`;
-    document.getElementById('multiplier-display').textContent = `${currentMultiplier.toFixed(2)}x`;
+    // Atualizar multiplicador junto com a nova questão
+    document.getElementById('multiplier-display').textContent = `Multiplicador: ${currentMultiplier.toFixed(2)}x`;
+    
+    // Atualizar erros restantes
+    const errorsRemaining = currentQuiz.maxErrors - currentQuiz.currentErrors;
+    document.getElementById('errors-remaining').textContent = `Erros restantes: ${errorsRemaining}`;
     
     // Atualizar barra de progresso
     const progressFill = document.getElementById('progress-fill');
@@ -233,10 +238,12 @@ function selectOption(selectedOption, buttonElement) {
         currentQuiz.currentMultiplierIndex = 0;
     }
     
-    // Atualizar displays
+    // Atualizar apenas o acumulado (multiplicador será atualizado na próxima pergunta)
     document.getElementById('score-display').textContent = `Acumulado: ${currentQuiz.accumulatedScore.toFixed(2)}`;
-    const currentMultiplier = MULTIPLIERS[currentQuiz.currentMultiplierIndex];
-    document.getElementById('multiplier-display').textContent = `${currentMultiplier.toFixed(2)}x`;
+    
+    // Atualizar erros restantes
+    const errorsRemaining = currentQuiz.maxErrors - currentQuiz.currentErrors;
+    document.getElementById('errors-remaining').textContent = `Erros restantes: ${errorsRemaining}`;
     
     // Destacar a resposta correta e a selecionada
     const optionButtons = document.querySelectorAll('.option-btn');
@@ -251,20 +258,25 @@ function selectOption(selectedOption, buttonElement) {
     // Verificar se atingiu o máximo de erros
     if (currentQuiz.currentErrors >= currentQuiz.maxErrors) {
         // Encerrar rodada automaticamente
+        console.log('Máximo de erros atingido. Encerrando quiz...');
+        console.log('Erros atuais:', currentQuiz.currentErrors);
+        console.log('Máximo de erros:', currentQuiz.maxErrors);
         showLoadingIndicator();
         setTimeout(() => {
+            console.log('Timeout executado, escondendo loading...');
             hideLoadingIndicator();
+            console.log('Chamando endQuizWithPenalty...');
             endQuizWithPenalty();
-        }, 3000);
+        }, 1000);
     } else {
         // Mostrar indicador de carregamento
         showLoadingIndicator();
         
-        // Avançar automaticamente após 3 segundos
+        // Avançar automaticamente após 1 segundo
         setTimeout(() => {
             hideLoadingIndicator();
             nextQuestion();
-        }, 3000);
+        }, 1000);
     }
 }
 
@@ -281,6 +293,8 @@ function nextQuestion() {
 
 // Função para mostrar resultados
 function showResults() {
+    console.log('showResults() executada');
+    console.log('currentQuestionIndex:', currentQuiz.currentQuestionIndex);
     const totalQuestions = currentQuiz.currentQuestionIndex;
     const correctAnswers = currentQuiz.correctAnswers;
     const wrongAnswers = currentQuiz.wrongAnswers;
@@ -296,7 +310,6 @@ function showResults() {
     const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
     
     // Atualizar elementos da tela de resultados
-    document.getElementById('final-score').textContent = finalScore.toFixed(2);
     document.getElementById('correct-count').textContent = correctAnswers;
     document.getElementById('wrong-count').textContent = wrongAnswers;
     document.getElementById('accumulated-display').textContent = accumulatedScore.toFixed(2);
@@ -320,18 +333,36 @@ function showResults() {
     
     document.getElementById('score-message').textContent = message;
     
+    console.log('Chamando showScreen("results")...');
     showScreen('results');
+    console.log('showScreen("results") executada');
 }
 
 // Função para encerrar quiz com penalidade (3 erros)
 function endQuizWithPenalty() {
+    // Garantir que o índice da pergunta seja ajustado para mostrar resultados
+    currentQuiz.currentQuestionIndex = currentQuiz.selectedQuestions.length;
+    console.log('Chamando showResults() após 3 erros...');
     showResults();
 }
 
 // Função para mostrar indicador de carregamento
 function showLoadingIndicator() {
-    const loadingOverlay = document.getElementById('loading-overlay');
-    if (loadingOverlay) {
+    let loadingOverlay = document.getElementById('loading-overlay');
+    if (!loadingOverlay) {
+        // Criar o loading overlay se não existir
+        const optionsContainer = document.getElementById('options-container');
+        if (optionsContainer) {
+            loadingOverlay = document.createElement('div');
+            loadingOverlay.id = 'loading-overlay';
+            loadingOverlay.className = 'loading-overlay';
+            loadingOverlay.innerHTML = `
+                <div class="spinner-overlay"></div>
+                <p>Carregando...</p>
+            `;
+            optionsContainer.appendChild(loadingOverlay);
+        }
+    } else {
         loadingOverlay.classList.remove('hidden');
     }
 }

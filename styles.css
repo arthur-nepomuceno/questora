@@ -224,32 +224,41 @@ body {
 .progress-info {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 10px;
     font-weight: 600;
     color: #4a5568;
 }
 
-.score-info {
+.left-info {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
     gap: 2px;
 }
 
-.score-info span:first-child {
-    font-size: 1rem;
+.multiplier-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
-.score-info span:last-child {
+.multiplier-info span {
     font-size: 1.2rem;
     color: #667eea;
     font-weight: 700;
 }
 
+.errors-info {
+    margin-top: 5px;
+}
+
+.errors-info span {
+    font-size: 0.9rem;
+    color: #e53e3e;
+    font-weight: 600;
+}
+
 .points-info {
-    text-align: center;
-    margin-bottom: 15px;
     font-weight: 600;
     color: #4a5568;
     font-size: 0.9rem;
