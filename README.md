@@ -2,7 +2,7 @@
 
 Uma plataforma interativa de quiz educacional com múltiplas categorias e interface moderna.
 
-NOTA: Por questões de segurança as perguntas deste quiz não estão nestes arquivos. Para acessa-las, fale com o dono do repositorio.
+NOTA: Por questões de segurança as perguntas deste quiz não estão nestes arquivos. Para acessar o banco de perguntas, fale com o dono do repositorio.
 
 ## 📋 Sobre o Projeto
 
