@@ -1,8 +1,10 @@
 "use client";
 
+import { QuizState, Screen, UserAnswer } from '@/types/quiz';
+
 interface ReviewScreenProps {
-  quizState: any;
-  setScreen: (screen: any) => void;
+  quizState: QuizState;
+  setScreen: (screen: Screen) => void;
 }
 
 export default function ReviewScreen({ quizState, setScreen }: ReviewScreenProps) {
@@ -28,7 +30,7 @@ export default function ReviewScreen({ quizState, setScreen }: ReviewScreenProps
 
       {/* Review List */}
       <div className="review-list">
-        {quizState.userAnswers.map((answer, index) => (
+        {quizState.userAnswers.map((answer: UserAnswer, index: number) => (
           <div
             key={index}
             className={`review-item ${answer.isCorrect ? 'correct' : 'wrong'}`}

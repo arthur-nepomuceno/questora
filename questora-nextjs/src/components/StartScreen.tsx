@@ -10,14 +10,14 @@ export default function StartScreen({ startQuiz }: StartScreenProps) {
     <>
       {/* Header */}
       <div className="header">
-        <h1>🎯 Questora - SoPerguntas</h1>
-        <p>Teste seus conhecimentos em diferentes áreas!</p>
+        <h1>🎯 Questora</h1>
+        <p>Teste seu conhecimento!</p>
       </div>
 
       {/* Main Card */}
       <div className="welcome-card">
         <h2>Bem-vindo ao Questora!</h2>
-        <p>Escolha uma categoria para testar seus conhecimentos:</p>
+        <p>Escolha uma categoria:</p>
         
         {/* Category Selection */}
         <div className="category-selection">
@@ -32,11 +32,11 @@ export default function StartScreen({ startQuiz }: StartScreenProps) {
           
           <div 
             className="category-card"
-            onClick={() => startQuiz("historia")}
+            onClick={() => startQuiz("novelas")}
             style={{ cursor: 'pointer' }}
           >
-            <div className="category-icon">📚</div>
-            <h3>História do Brasil</h3>
+            <div className="category-icon">📺</div>
+            <h3>Novelas</h3>
           </div>
         </div>
       </div>

@@ -43,8 +43,8 @@ export default function QuizScreen({
     <>
       {/* Header */}
       <div className="header">
-        <h1>🎯 Questora - SoPerguntas</h1>
-        <p>Teste seus conhecimentos em diferentes áreas!</p>
+        <h1>🎯 Questora</h1>
+        <p>Teste seu conhecimento!</p>
       </div>
 
       {/* Quiz Header */}
