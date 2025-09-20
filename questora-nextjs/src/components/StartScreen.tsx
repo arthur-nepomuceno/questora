@@ -8,16 +8,18 @@ export default function StartScreen({ startQuiz }: StartScreenProps) {
 
   return (
     <>
-      {/* Header */}
-      <div className="header">
-        <h1>🎯 Questora</h1>
-        <p>Teste seu conhecimento!</p>
+      {/* Logo Questora no estilo Show do Milhão */}
+      <div className="questora-logo">
+        <h1>🎯 QUESTORA</h1>
+        <div className="coin-icon">
+          🎮
+        </div>
       </div>
 
       {/* Main Card */}
       <div className="welcome-card">
         <h2>Bem-vindo ao Questora!</h2>
-        <p>Escolha uma categoria:</p>
+        <p>Escolha uma categoria para começar:</p>
         
         {/* Category Selection */}
         <div className="category-selection">

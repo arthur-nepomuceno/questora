@@ -20,10 +20,12 @@ export default function CreditsScreen({ setScreen, startQuizWithCredits }: Credi
 
   return (
     <>
-      {/* Header */}
-      <div className="header">
-        <h1>🎯 Questora</h1>
-        <p>Teste seu conhecimento!</p>
+      {/* Logo Questora no estilo Show do Milhão */}
+      <div className="questora-logo">
+        <h1>🎯 QUESTORA</h1>
+        <div className="coin-icon">
+          💰
+        </div>
       </div>
 
       {/* Main Card */}

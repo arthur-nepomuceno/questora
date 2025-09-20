@@ -21,7 +21,6 @@ export default function QuizScreen({
 
   const currentQuestion = quizState.selectedQuestions[quizState.currentQuestionIndex];
   const totalQuestions = quizState.selectedQuestions.length;
-  const progressPercentage = (quizState.currentQuestionIndex / totalQuestions) * 100;
 
   // Randomizar as opções para cada pergunta
   const shuffledOptions = React.useMemo(() => {
@@ -41,90 +40,73 @@ export default function QuizScreen({
 
   return (
     <>
-      {/* Header */}
-      <div className="header">
-        <h1>🎯 Questora</h1>
-        <p>Teste seu conhecimento!</p>
-      </div>
-
-      {/* Quiz Header */}
-      <div className="quiz-header">
-        <div className="progress-info">
-          <div className="left-info">
-            <div>Pergunta {quizState.currentQuestionIndex + 1} de {totalQuestions}</div>
-            <div className="points-info">Valor da Rodada: {quizState.selectedCredits}</div>
-            <div className="points-info">Acumulado: {formatScore(quizState.accumulatedScore)}</div>
-          </div>
-          <div className="multiplier-info">
-            <span>Multiplicador: {MULTIPLIERS[quizState.currentMultiplierIndex]}x</span>
-            <div className="errors-info">
-              <span>Erros restantes: {quizState.maxErrors - quizState.currentErrors}</span>
-            </div>
-            <div className="timer-info">
-              <span>⏰ {formatTime(timeRemaining)}</span>
-            </div>
-          </div>
-        </div>
-        <div className="progress-bar">
-          <div 
-            id="progress-fill"
-            style={{ width: `${progressPercentage}%` }}
-          ></div>
+      {/* Logo Questora no estilo Show do Milhão */}
+      <div className="questora-logo">
+        <h1>🎯 QUESTORA</h1>
+        <div className="coin-icon">
+          {quizState.currentMultiplierIndex + 1}
         </div>
       </div>
 
-      {/* Question Card */}
+      {/* Timer */}
+      <div className="timer-display">
+        ⏰ {formatTime(timeRemaining)}
+      </div>
+
+      {/* Caixa da pergunta */}
       {currentQuestion && (
-        <div className="question-card">
-          <div className="question-header">
-            <h3>
-              {currentQuestion.pergunta}{' '}
-              <span 
-                className={`difficulty-badge difficulty-${currentQuestion.dificuldade}`}
-                style={{ 
-                  backgroundColor: currentQuestion.dificuldade === 'facil' ? '#10b981' : 
-                                 currentQuestion.dificuldade === 'medio' ? '#f59e0b' : '#ef4444',
-                  color: 'white',
-                  padding: '4px 8px',
-                  borderRadius: '12px',
-                  fontSize: '0.75rem',
-                  fontWeight: '700',
-                  marginLeft: '8px'
-                }}
-              >
-                {currentQuestion.dificuldade === 'facil' ? 'Fácil' : 
-                 currentQuestion.dificuldade === 'medio' ? 'Médio' : 'Difícil'}
-              </span>
-            </h3>
+        <div className="question-box">
+          <div 
+            className={`difficulty-badge difficulty-${currentQuestion.dificuldade}`}
+          >
+            {currentQuestion.dificuldade === 'facil' ? 'FÁCIL' : 
+             currentQuestion.dificuldade === 'medio' ? 'MÉDIO' : 'DIFÍCIL'}
           </div>
-          
-          {/* Options */}
-          <div className="options-container">
-            {shuffledOptions.map((opcao, index) => {
-              let buttonClass = "option-btn";
-              
-              if (showFeedback && selectedOption === opcao) {
-                const isCorrect = opcao === currentQuestion.correta;
-                buttonClass += isCorrect ? " correct-feedback" : " wrong-feedback";
-              } else if (showFeedback && opcao === currentQuestion.correta && selectedOption === currentQuestion.correta) {
-                // Só mostra a resposta correta se o participante acertou
-                buttonClass += " correct-answer";
-              }
-              
-              return (
-                <button
-                  key={index}
-                  className={buttonClass}
-                  onClick={() => selectOption(opcao)}
-                  disabled={showFeedback}
-                >
-                  {opcao}
-                </button>
-              );
-            })}
+          <div className="question-text">
+            {currentQuestion.pergunta}
           </div>
         </div>
       )}
+
+      {/* Container das alternativas */}
+      <div className="alternatives-container">
+        {shuffledOptions.map((opcao, index) => {
+          let alternativeClass = "alternative-box";
+          
+          if (showFeedback && selectedOption === opcao) {
+            const isCorrect = opcao === currentQuestion.correta;
+            alternativeClass += isCorrect ? " correct-feedback" : " wrong-feedback";
+          }
+          
+          return (
+            <div
+              key={index}
+              className={alternativeClass}
+              onClick={() => !showFeedback && selectOption(opcao)}
+              style={{ cursor: showFeedback ? 'not-allowed' : 'pointer' }}
+            >
+              <div className="option-number">
+                {index + 1}
+              </div>
+              <div className="alternative-text">
+                {opcao}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Multiplicadores */}
+      <div className="multipliers-display">
+        {MULTIPLIERS.map((multiplier, index) => (
+          <div 
+            key={index}
+            className={`multiplier-item ${index === quizState.currentMultiplierIndex ? 'active' : ''}`}
+          >
+            {multiplier}x
+          </div>
+        ))}
+      </div>
     </>
   );
 }

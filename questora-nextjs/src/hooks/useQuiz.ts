@@ -20,6 +20,20 @@ const initialQuizState: QuizState = {
   currentErrors: 0,
 };
 
+// Função utilitária para verificar perguntas duplicadas
+const hasDuplicateQuestions = (questions: Question[]): boolean => {
+  const ids = questions.map(q => q.id);
+  return ids.length !== new Set(ids).size;
+};
+
+// Função utilitária para obter perguntas disponíveis (não usadas)
+const getAvailableQuestions = (
+  allQuestions: Question[], 
+  usedQuestionIds: Set<number>
+): Question[] => {
+  return allQuestions.filter(q => !usedQuestionIds.has(q.id));
+};
+
 export const useQuiz = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('start');
   const [quizState, setQuizState] = useState<QuizState>(initialQuizState);
@@ -43,9 +57,24 @@ export const useQuiz = () => {
       return randomEasy ? [randomEasy] : [];
     }
     
+    // Garantir que temos perguntas suficientes de cada dificuldade
+    if (easyQuestions.length < 4 || mediumQuestions.length < 2 || hardQuestions.length < 4) {
+      console.warn('Não há perguntas suficientes de alguma dificuldade na categoria:', category);
+      return [];
+    }
+    
+    // Selecionar perguntas únicas de cada dificuldade
     const selectedEasy = shuffle([...easyQuestions]).slice(0, 4);
     const selectedMedium = shuffle([...mediumQuestions]).slice(0, 2);
     const selectedHard = shuffle([...hardQuestions]).slice(0, 4);
+
+    // Verificar se todas as perguntas selecionadas são únicas
+    const allSelectedQuestions = [...selectedEasy, ...selectedMedium, ...selectedHard];
+    
+    if (hasDuplicateQuestions(allSelectedQuestions)) {
+      console.error('Perguntas duplicadas detectadas na seleção inicial!');
+      return [];
+    }
 
     return [
       ...selectedEasy,           // Questões 1-4: fáceis
@@ -141,11 +170,33 @@ export const useQuiz = () => {
       // Se a próxima pergunta deve ser fácil, substitui ela agora
       const nextIndex = newState.currentQuestionIndex + 1;
       if (nextShouldBeEasy && nextIndex < newState.selectedQuestions.length && newState.selectedQuestions[nextIndex]?.dificuldade !== 'facil') {
-        const easyQuestions = questionsData[newState.selectedCategory!].filter(q => q.dificuldade === 'facil');
-        const randomEasy = easyQuestions[Math.floor(Math.random() * easyQuestions.length)];
-        const newQuestions = [...newState.selectedQuestions];
-        newQuestions[nextIndex] = randomEasy;
-        newState.selectedQuestions = newQuestions;
+        // Pegar todas as perguntas fáceis da categoria
+        const allEasyQuestions = questionsData[newState.selectedCategory!].filter(q => q.dificuldade === 'facil');
+        
+        // Pegar IDs das perguntas já usadas (incluindo a atual e as já respondidas)
+        const usedQuestionIds = new Set([
+          ...newState.selectedQuestions.slice(0, nextIndex + 1).map(q => q.id),
+          ...newState.userAnswers.map(answer => answer.question.id)
+        ]);
+        
+        // Usar função utilitária para obter perguntas fáceis disponíveis
+        const availableEasyQuestions = getAvailableQuestions(allEasyQuestions, usedQuestionIds);
+        
+        // Se ainda há perguntas fáceis disponíveis, escolher uma aleatória
+        if (availableEasyQuestions.length > 0) {
+          const randomEasy = availableEasyQuestions[Math.floor(Math.random() * availableEasyQuestions.length)];
+          const newQuestions = [...newState.selectedQuestions];
+          newQuestions[nextIndex] = randomEasy;
+          newState.selectedQuestions = newQuestions;
+          
+          // Verificar se a nova seleção não tem duplicatas
+          if (hasDuplicateQuestions(newState.selectedQuestions)) {
+            console.error('Pergunta duplicada detectada após substituição!');
+            // Reverter a mudança se houver duplicata
+            newState.selectedQuestions = [...newState.selectedQuestions];
+          }
+        }
+        // Se não há mais perguntas fáceis disponíveis, mantém a pergunta original
       }
 
       return newState;

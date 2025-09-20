@@ -36,10 +36,12 @@ export default function ResultsScreen({
 
   return (
     <>
-      {/* Header */}
-      <div className="header">
-        <h1>🎯 Questora - SoPerguntas</h1>
-        <p>Teste seus conhecimentos em diferentes áreas!</p>
+      {/* Logo Questora no estilo Show do Milhão */}
+      <div className="questora-logo">
+        <h1>🎯 QUESTORA</h1>
+        <div className="coin-icon">
+          🏆
+        </div>
       </div>
 
       {/* Main Card */}
