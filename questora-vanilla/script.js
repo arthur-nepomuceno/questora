@@ -124,6 +124,10 @@ let currentQuiz = {
     currentErrors: 0
 };
 
+// Variáveis do temporizador
+let timerInterval = null;
+let timeRemaining = 60; // 1 minuto em segundos
+
 // Elementos DOM
 const screens = {
     start: document.getElementById('start-screen'),
@@ -133,7 +137,7 @@ const screens = {
     review: document.getElementById('review-screen')
 };
 
-// Função para selecionar perguntas aleatoriamente
+// Função para selecionar perguntas aleatoriamente seguindo ordem específica
 function selectRandomQuestions(category) {
     const categoryQuestions = questionsData[category];
     const easyQuestions = categoryQuestions.filter(q => q.dificuldade === 'facil');
@@ -143,16 +147,22 @@ function selectRandomQuestions(category) {
     // Embaralhar arrays
     const shuffle = (array) => array.sort(() => Math.random() - 0.5);
     
-    // Selecionar 4 fáceis, 3 médias e 3 difíceis
+    // Selecionar questões seguindo a ordem específica:
+    // 1-4: fáceis (4 questões)
+    // 5-6: difíceis (2 questões)  
+    // 7-8: médias (2 questões)
+    // 9-10: difíceis (2 questões)
     const selectedEasy = shuffle([...easyQuestions]).slice(0, 4);
-    const selectedMedium = shuffle([...mediumQuestions]).slice(0, 3);
-    const selectedHard = shuffle([...hardQuestions]).slice(0, 3);
+    const selectedMedium = shuffle([...mediumQuestions]).slice(0, 2);
+    const selectedHard = shuffle([...hardQuestions]).slice(0, 4); // 4 difíceis total
 
-    // Combinar mantendo ordem: 4 fáceis primeiro, depois embaralhar o resto
-    const remainingQuestions = [...selectedMedium, ...selectedHard];
-    const shuffledRemaining = shuffle(remainingQuestions);
-    
-    return [...selectedEasy, ...shuffledRemaining];
+    // Ordem específica: 4 fáceis + 2 difíceis + 2 médias + 2 difíceis
+    return [
+        ...selectedEasy,           // Questões 1-4: fáceis
+        ...selectedHard.slice(0, 2), // Questões 5-6: difíceis
+        ...selectedMedium,         // Questões 7-8: médias  
+        ...selectedHard.slice(2, 4)  // Questões 9-10: difíceis
+    ];
 }
 
 // Função para mostrar uma tela específica
@@ -187,8 +197,71 @@ function startQuizWithCredits(credits) {
     // Atualizar o display de pontos com os créditos selecionados
     document.getElementById('points-display').textContent = `Valor da Rodada: ${credits}`;
     
+    // Iniciar temporizador
+    startTimer();
+    
     showScreen('quiz');
     displayQuestion();
+}
+
+// Função para iniciar o temporizador
+function startTimer() {
+    timeRemaining = 60; // Reset para 1 minuto
+    updateTimerDisplay();
+    
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        
+        if (timeRemaining <= 0) {
+            // Tempo esgotado - encerrar rodada
+            endQuizByTime();
+        }
+    }, 1000);
+}
+
+// Função para atualizar o display do temporizador
+function updateTimerDisplay() {
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = timeRemaining % 60;
+    const display = `⏱️ ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    const timerDisplay = document.getElementById('timer-display');
+    if (timerDisplay) {
+        timerDisplay.textContent = display;
+        
+        // Mudar cor quando restam 10 segundos ou menos
+        if (timeRemaining <= 10) {
+            timerDisplay.style.color = '#ff0000'; // Vermelho
+        } else if (timeRemaining <= 30) {
+            timerDisplay.style.color = '#ffaa00'; // Laranja
+        } else {
+            timerDisplay.style.color = '#00ff00'; // Verde
+        }
+    }
+}
+
+// Função para parar o temporizador
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+// Função para encerrar quiz por tempo esgotado
+function endQuizByTime() {
+    stopTimer();
+    console.log('Tempo esgotado! Encerrando rodada...');
+    
+    // Mostrar indicador de carregamento
+    showLoadingIndicator();
+    
+    setTimeout(() => {
+        hideLoadingIndicator();
+        currentQuiz.currentQuestionIndex = currentQuiz.selectedQuestions.length;
+        showResults();
+    }, 1000);
 }
 
 // Função para exibir a pergunta atual
@@ -340,6 +413,8 @@ function nextQuestion() {
     if (currentQuiz.currentQuestionIndex < currentQuiz.selectedQuestions.length) {
         displayQuestion();
     } else {
+        // Quiz terminou normalmente - parar temporizador
+        stopTimer();
         showResults();
     }
 }
@@ -367,6 +442,12 @@ function showResults() {
     document.getElementById('wrong-count').textContent = wrongAnswers;
     document.getElementById('accumulated-display').textContent = accumulatedScore.toFixed(2);
     
+    // Mostrar tempo restante
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = timeRemaining % 60;
+    const timeDisplay = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('remaining-time-display').textContent = timeDisplay;
+    
     // Mensagem baseada na pontuação final
     let message = '';
     if (finalScore >= 50) {
@@ -382,6 +463,8 @@ function showResults() {
     // Adicionar mensagem especial se encerrou por 3 erros
     if (currentQuiz.currentErrors >= currentQuiz.maxErrors) {
         message += ' (Rodada encerrada por atingir 3 erros)';
+    } else if (timeRemaining <= 0) {
+        message += ' (Rodada encerrada por tempo esgotado)';
     }
     
     document.getElementById('score-message').textContent = message;
@@ -393,6 +476,9 @@ function showResults() {
 
 // Função para encerrar quiz com penalidade (3 erros)
 function endQuizWithPenalty() {
+    // Parar temporizador
+    stopTimer();
+    
     // Garantir que o índice da pergunta seja ajustado para mostrar resultados
     currentQuiz.currentQuestionIndex = currentQuiz.selectedQuestions.length;
     console.log('Chamando showResults() após 3 erros...');
@@ -430,6 +516,8 @@ function hideLoadingIndicator() {
 
 // Função para reiniciar o quiz
 function restartQuiz() {
+    // Parar temporizador se estiver rodando
+    stopTimer();
     showScreen('start');
 }
 
