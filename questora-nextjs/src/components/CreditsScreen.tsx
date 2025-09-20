@@ -22,13 +22,13 @@ export default function CreditsScreen({ setScreen, startQuizWithCredits }: Credi
     <>
       {/* Header */}
       <div className="header">
-        <h1>🎯 Questora - SoPerguntas</h1>
-        <p>Teste seus conhecimentos em diferentes áreas!</p>
+        <h1>🎯 Questora</h1>
+        <p>Teste seu conhecimento!</p>
       </div>
 
       {/* Main Card */}
       <div className="credits-card">
-        <h2>Escolha quantos créditos investir</h2>
+        <h2>Escolha os créditos da rodada</h2>
         <p>Selecione com quanto deseja participar nesta rodada:</p>
         
         {/* Credit Options */}
