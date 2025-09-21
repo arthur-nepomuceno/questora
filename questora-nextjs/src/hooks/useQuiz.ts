@@ -58,13 +58,13 @@ export const useQuiz = () => {
     }
     
     // Garantir que temos perguntas suficientes de cada dificuldade
-    if (easyQuestions.length < 4 || mediumQuestions.length < 2 || hardQuestions.length < 4) {
+    if (easyQuestions.length < 3 || mediumQuestions.length < 2 || hardQuestions.length < 4) {
       console.warn('Não há perguntas suficientes de alguma dificuldade na categoria:', category);
       return [];
     }
     
     // Selecionar perguntas únicas de cada dificuldade
-    const selectedEasy = shuffle([...easyQuestions]).slice(0, 4);
+    const selectedEasy = shuffle([...easyQuestions]).slice(0, 3);
     const selectedMedium = shuffle([...mediumQuestions]).slice(0, 2);
     const selectedHard = shuffle([...hardQuestions]).slice(0, 4);
 
@@ -77,10 +77,12 @@ export const useQuiz = () => {
     }
 
     return [
-      ...selectedEasy,           // Questões 1-4: fáceis
-      ...selectedHard.slice(0, 2), // Questões 5-6: difíceis
-      ...selectedMedium,         // Questões 7-8: médias  
-      ...selectedHard.slice(2, 4)  // Questões 9-10: difíceis
+      ...selectedEasy.slice(0, 2),  // Questões 1-2: fáceis
+      selectedEasy[2],              // Questão 3: fácil
+      selectedMedium[0],            // Questão 4: média
+      ...selectedHard.slice(0, 2),  // Questões 5-6: difíceis
+      selectedMedium[1],            // Questão 7: média
+      ...selectedHard.slice(2, 4)   // Questões 8-9: difíceis
     ];
   }, []);
 
@@ -225,7 +227,7 @@ export const useQuiz = () => {
           return { ...prev, currentQuestionIndex: newIndex };
         }
       });
-    }, 1500);
+    }, 500);
   }, [quizState.maxErrors, quizState.selectedQuestions, quizState.currentQuestionIndex, shouldNextBeEasy, stopTimer]);
 
 

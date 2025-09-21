@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 interface QuizScreenProps {
   quizState: any;
@@ -21,6 +21,18 @@ export default function QuizScreen({
 
   const currentQuestion = quizState.selectedQuestions[quizState.currentQuestionIndex];
   const totalQuestions = quizState.selectedQuestions.length;
+  
+  // Estado para controlar visibilidade dos valores
+  const [showValues, setShowValues] = useState(true);
+  const [currentMultiplier, setCurrentMultiplier] = useState(MULTIPLIERS[quizState.currentMultiplierIndex]);
+  const [currentAccumulated, setCurrentAccumulated] = useState(quizState.accumulatedScore);
+  
+  // Atualiza os valores quando uma nova pergunta carrega
+  useEffect(() => {
+    setCurrentMultiplier(MULTIPLIERS[quizState.currentMultiplierIndex]);
+    setCurrentAccumulated(quizState.accumulatedScore);
+    setShowValues(true);
+  }, [quizState.currentQuestionIndex, MULTIPLIERS, quizState.currentMultiplierIndex, quizState.accumulatedScore]);
 
   // Randomizar as opções para cada pergunta
   const shuffledOptions = React.useMemo(() => {
@@ -118,7 +130,7 @@ export default function QuizScreen({
             <div className="multiplier-text">
               <div className="multiplier-label">Multiplicador</div>
               <div className="multiplier-value">
-                {MULTIPLIERS[quizState.currentMultiplierIndex]}x
+                {showValues ? `${currentMultiplier}x` : '---'}
               </div>
             </div>
           </div>
@@ -129,7 +141,7 @@ export default function QuizScreen({
             <div className="accumulated-text">
               <div className="accumulated-label">Acumulado</div>
               <div className="accumulated-value-number">
-                {formatScore(quizState.accumulatedScore)}
+                {showValues ? formatScore(currentAccumulated) : '---'}
               </div>
             </div>
           </div>

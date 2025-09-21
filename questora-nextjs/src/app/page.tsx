@@ -11,7 +11,7 @@ export default function Home() {
   const quizHook = useQuiz();
 
   return (
-    <div className="container">
+    <div className="quiz-container">
       {quizHook.currentScreen === "start" && <StartScreen {...quizHook} />}
       {quizHook.currentScreen === "credits" && <CreditsScreen {...quizHook} />}
       {quizHook.currentScreen === "quiz" && (
