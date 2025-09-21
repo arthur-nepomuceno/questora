@@ -44,68 +44,96 @@ export default function QuizScreen({
       <div className="questora-logo">
         <h1>🎯 QUESTORA</h1>
         <div className="coin-icon">
-          {quizState.currentMultiplierIndex + 1}
+          🏆
         </div>
       </div>
 
-      {/* Timer */}
-      <div className="timer-display">
-        ⏰ {formatTime(timeRemaining)}
-      </div>
-
-      {/* Caixa da pergunta */}
-      {currentQuestion && (
-        <div className="question-box">
-          <div 
-            className={`difficulty-badge difficulty-${currentQuestion.dificuldade}`}
-          >
-            {currentQuestion.dificuldade === 'facil' ? 'FÁCIL' : 
-             currentQuestion.dificuldade === 'medio' ? 'MÉDIO' : 'DIFÍCIL'}
-          </div>
-          <div className="question-text">
-            {currentQuestion.pergunta}
-          </div>
-        </div>
-      )}
-
-      {/* Container das alternativas */}
-      <div className="alternatives-container">
-        {shuffledOptions.map((opcao, index) => {
-          let alternativeClass = "alternative-box";
-          
-          if (showFeedback && selectedOption === opcao) {
-            const isCorrect = opcao === currentQuestion.correta;
-            alternativeClass += isCorrect ? " correct-feedback" : " wrong-feedback";
-          }
-          
-          return (
-            <div
-              key={index}
-              className={alternativeClass}
-              onClick={() => !showFeedback && selectOption(opcao)}
-              style={{ cursor: showFeedback ? 'not-allowed' : 'pointer' }}
-            >
-              <div className="option-number">
-                {index + 1}
+      {/* Layout principal com 67% esquerda e 33% direita */}
+      <div className="quiz-main-layout">
+        {/* Área esquerda - Pergunta e Opções (67%) */}
+        <div className="quiz-content-left">
+          {/* Caixa da pergunta */}
+          {currentQuestion && (
+            <div className="question-box">
+              <div 
+                className={`difficulty-badge difficulty-${currentQuestion.dificuldade}`}
+              >
+                {currentQuestion.dificuldade === 'facil' ? 'FÁCIL' : 
+                 currentQuestion.dificuldade === 'medio' ? 'MÉDIO' : 'DIFÍCIL'}
               </div>
-              <div className="alternative-text">
-                {opcao}
+              <div className="question-text">
+                {currentQuestion.pergunta}
               </div>
             </div>
-          );
-        })}
-      </div>
+          )}
 
-      {/* Multiplicadores */}
-      <div className="multipliers-display">
-        {MULTIPLIERS.map((multiplier, index) => (
-          <div 
-            key={index}
-            className={`multiplier-item ${index === quizState.currentMultiplierIndex ? 'active' : ''}`}
-          >
-            {multiplier}x
+          {/* Container das alternativas */}
+          <div className="alternatives-container">
+            {shuffledOptions.map((opcao, index) => {
+              let alternativeClass = "alternative-box";
+              
+              if (showFeedback && selectedOption === opcao) {
+                const isCorrect = opcao === currentQuestion.correta;
+                alternativeClass += isCorrect ? " correct-feedback" : " wrong-feedback";
+              }
+              
+              return (
+                <div
+                  key={index}
+                  className={alternativeClass}
+                  onClick={() => !showFeedback && selectOption(opcao)}
+                  style={{ cursor: showFeedback ? 'not-allowed' : 'pointer' }}
+                >
+                  <div className="option-number">
+                    {index + 1}
+                  </div>
+                  <div className="alternative-text">
+                    {opcao}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
+        </div>
+
+        {/* Área direita - Indicadores (33%) */}
+        <div className="quiz-sidebar-right">
+          {/* Indicador de pergunta */}
+          <div className="question-indicator">
+            <div className="indicator-icon">📝</div>
+            <div className="indicator-text">
+              Pergunta {quizState.currentQuestionIndex + 1} de {totalQuestions}
+            </div>
+          </div>
+
+          {/* Timer */}
+          <div className="timer-display">
+            <div className="timer-icon">⏰</div>
+            <div className="timer-text">{formatTime(timeRemaining)}</div>
+          </div>
+
+          {/* Multiplicador atual */}
+          <div className="current-multiplier">
+            <div className="multiplier-icon">💰</div>
+            <div className="multiplier-text">
+              <div className="multiplier-label">Multiplicador</div>
+              <div className="multiplier-value">
+                {MULTIPLIERS[quizState.currentMultiplierIndex]}x
+              </div>
+            </div>
+          </div>
+
+          {/* Valor Acumulado */}
+          <div className="accumulated-value">
+            <div className="accumulated-icon">🏆</div>
+            <div className="accumulated-text">
+              <div className="accumulated-label">Acumulado</div>
+              <div className="accumulated-value-number">
+                {formatScore(quizState.accumulatedScore)}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

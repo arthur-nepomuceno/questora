@@ -49,23 +49,38 @@ export default function ResultsScreen({
         <h2>🎉 Quiz Finalizado!</h2>
         <p>☝️ {getEndMessage()}</p>
 
-        {/* Statistics Grid */}
+        {/* Statistics Grid - Cada resultado em um quadrado individual */}
         <div className="results-details">
-          <div className="stat">
-            <span className="stat-label">Acertos</span>
-            <span className="stat-value correct">{quizState.correctAnswers}</span>
+          <div className="result-square">
+            <div className="result-icon">✅</div>
+            <div className="result-info">
+              <span className="result-label">Acertos</span>
+              <span className="result-value correct">{quizState.correctAnswers}</span>
+            </div>
           </div>
-          <div className="stat">
-            <span className="stat-label">Erros</span>
-            <span className="stat-value wrong">{quizState.wrongAnswers}</span>
+          
+          <div className="result-square">
+            <div className="result-icon">❌</div>
+            <div className="result-info">
+              <span className="result-label">Erros</span>
+              <span className="result-value wrong">{quizState.wrongAnswers}</span>
+            </div>
           </div>
-          <div className="stat">
-            <span className="stat-label">Acumulado</span>
-            <span className="stat-value">{formatScore(quizState.accumulatedScore)}</span>
+          
+          <div className="result-square">
+            <div className="result-icon">💰</div>
+            <div className="result-info">
+              <span className="result-label">Acumulado</span>
+              <span className="result-value">{formatScore(quizState.accumulatedScore)}</span>
+            </div>
           </div>
-          <div className="stat">
-            <span className="stat-label">Tempo Restante</span>
-            <span className="stat-value">{formatTime(timeRemaining)}</span>
+          
+          <div className="result-square">
+            <div className="result-icon">⏱️</div>
+            <div className="result-info">
+              <span className="result-label">Tempo Restante</span>
+              <span className="result-value">{formatTime(timeRemaining)}</span>
+            </div>
           </div>
         </div>
 
