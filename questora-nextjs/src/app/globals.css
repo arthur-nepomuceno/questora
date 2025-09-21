@@ -5,15 +5,153 @@
   box-sizing: border-box;
 }
 
+/* PWA Styles */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 body {
   font-family: 'Arial', 'Verdana', sans-serif;
   background: linear-gradient(to bottom, #1a237e, #1976d2, #42a5f5);
   min-height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  overflow-x: hidden;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+  overflow: hidden;
 }
+
+/* Install Prompt */
+.install-prompt {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: linear-gradient(135deg, #1a237e, #283593);
+  border: 3px solid #ffeb3b;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+.install-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.install-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.install-text h3 {
+  color: #ffeb3b;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.install-text p {
+  color: white;
+  font-size: 0.9rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.install-actions {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.install-btn,
+.share-btn,
+.close-btn {
+  background: linear-gradient(135deg, #ffeb3b, #ffc107);
+  color: #1a237e;
+  border: 2px solid #ff9800;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.install-btn:hover,
+.share-btn:hover,
+.close-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 235, 59, 0.4);
+}
+
+.share-btn,
+.close-btn {
+  padding: 8px;
+  font-size: 1rem;
+  min-width: 40px;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .install-prompt {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 12px;
+  }
+  
+  .install-content {
+    gap: 10px;
+  }
+  
+  .install-icon {
+    font-size: 1.5rem;
+  }
+  
+  .install-text h3 {
+    font-size: 1rem;
+  }
+  
+  .install-text p {
+    font-size: 0.8rem;
+  }
+  
+  .install-actions {
+    gap: 8px;
+  }
+  
+  .install-btn,
+  .share-btn,
+  .close-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
 
 /* Container principal */
 .quiz-container {

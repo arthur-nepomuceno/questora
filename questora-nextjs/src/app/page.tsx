@@ -5,6 +5,7 @@ import CreditsScreen from "@/components/CreditsScreen";
 import QuizScreen from "@/components/QuizScreen";
 import ResultsScreen from "@/components/ResultsScreen";
 import ReviewScreen from "@/components/ReviewScreen";
+import InstallPrompt from "@/components/InstallPrompt";
 
 export default function Home() {
   const quizHook = useQuiz();
@@ -25,6 +26,9 @@ export default function Home() {
       )}
       {quizHook.currentScreen === "results" && <ResultsScreen {...quizHook} />}
       {quizHook.currentScreen === "review" && <ReviewScreen {...quizHook} />}
+      
+      {/* PWA Install Prompt */}
+      <InstallPrompt />
     </div>
   );
 }
