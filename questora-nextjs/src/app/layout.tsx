@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NODE_ENV === 'production' 
-    ? 'https://questora.vercel.app' 
+    ? 'https://arthur-nepomuceno.github.io/questora' 
     : 'http://localhost:3000'
   ),
   title: "Questora - Quiz Interativo",
