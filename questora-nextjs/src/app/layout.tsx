@@ -1,9 +1,9 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NODE_ENV === 'production' 
-    ? 'https://arthur-nepomuceno.github.io/questora' 
+    ? 'https://arthur-nepomuceno.github.io/questora/' 
     : 'http://localhost:3000'
   ),
   title: "Questora - Quiz Interativo",
@@ -31,14 +31,6 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = {
-  themeColor: "#d32f2f",
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
-  viewportFit: "cover",
-};
 
 export default function RootLayout({
   children,
