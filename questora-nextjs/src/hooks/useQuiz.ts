@@ -58,14 +58,14 @@ export const useQuiz = () => {
     }
     
     // Garantir que temos perguntas suficientes de cada dificuldade
-    if (easyQuestions.length < 3 || mediumQuestions.length < 2 || hardQuestions.length < 4) {
+    if (easyQuestions.length < 3 || mediumQuestions.length < 3 || hardQuestions.length < 4) {
       console.warn('Não há perguntas suficientes de alguma dificuldade na categoria:', category);
       return [];
     }
     
     // Selecionar perguntas únicas de cada dificuldade
     const selectedEasy = shuffle([...easyQuestions]).slice(0, 3);
-    const selectedMedium = shuffle([...mediumQuestions]).slice(0, 2);
+    const selectedMedium = shuffle([...mediumQuestions]).slice(0, 3);
     const selectedHard = shuffle([...hardQuestions]).slice(0, 4);
 
     // Verificar se todas as perguntas selecionadas são únicas
@@ -82,7 +82,8 @@ export const useQuiz = () => {
       selectedMedium[0],            // Questão 4: média
       ...selectedHard.slice(0, 2),  // Questões 5-6: difíceis
       selectedMedium[1],            // Questão 7: média
-      ...selectedHard.slice(2, 4)   // Questões 8-9: difíceis
+      ...selectedHard.slice(2, 4),  // Questões 8-9: difíceis
+      selectedMedium[2]             // Questão 10: média
     ];
   }, []);
 

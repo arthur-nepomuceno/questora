@@ -2,6 +2,10 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NODE_ENV === 'production' 
+    ? 'https://questora.vercel.app' 
+    : 'http://localhost:3000'
+  ),
   title: "Questora - Quiz Interativo",
   description: "Plataforma de perguntas e respostas com design inspirado no Show do Milhão. Teste seus conhecimentos em futebol e novelas!",
   manifest: "/manifest.json",

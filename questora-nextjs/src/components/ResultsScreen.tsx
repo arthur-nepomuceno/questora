@@ -47,11 +47,12 @@ export default function ResultsScreen({
       {/* Main Card */}
       <div className="results-card">
         <h2>🎉 Quiz Finalizado!</h2>
-        <p>☝️ {getEndMessage()}</p>
+        <p className="quiz-end-message">☝️ {getEndMessage()}</p>
 
-        {/* Statistics Grid - Cada resultado em um quadrado individual */}
+        {/* Statistics Grid - Layout 2x2 fixo */}
         <div className="results-details">
-          <div className="result-square">
+          {/* Primeira linha: Acertos e Erros */}
+          <div className="result-square result-acertos">
             <div className="result-icon">✅</div>
             <div className="result-info">
               <span className="result-label">Acertos</span>
@@ -59,7 +60,7 @@ export default function ResultsScreen({
             </div>
           </div>
           
-          <div className="result-square">
+          <div className="result-square result-erros">
             <div className="result-icon">❌</div>
             <div className="result-info">
               <span className="result-label">Erros</span>
@@ -67,7 +68,8 @@ export default function ResultsScreen({
             </div>
           </div>
           
-          <div className="result-square">
+          {/* Segunda linha: Acumulado e Tempo Restante */}
+          <div className="result-square result-acumulado">
             <div className="result-icon">💰</div>
             <div className="result-info">
               <span className="result-label">Acumulado</span>
@@ -75,7 +77,7 @@ export default function ResultsScreen({
             </div>
           </div>
           
-          <div className="result-square">
+          <div className="result-square result-tempo">
             <div className="result-icon">⏱️</div>
             <div className="result-info">
               <span className="result-label">Tempo Restante</span>
