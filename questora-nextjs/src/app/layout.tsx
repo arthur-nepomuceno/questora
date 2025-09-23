@@ -3,12 +3,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NODE_ENV === 'production' 
-    ? 'https://arthur-nepomuceno.github.io/questora/' 
+    ? 'https://questora.vercel.app' 
     : 'http://localhost:3000'
   ),
   title: "Questora - Quiz Interativo",
   description: "Plataforma de perguntas e respostas com design inspirado no Show do Milhão. Teste seus conhecimentos em futebol e novelas!",
-  manifest: "/questora/manifest.json",
+  manifest: "/manifest.json",
   themeColor: "#d32f2f",
   appleWebApp: {
     capable: true,
@@ -40,9 +40,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
-        <link rel="manifest" href="/questora/manifest.json" />
-        <link rel="icon" href="/questora/icons/icon-192x192.png" />
-        <link rel="apple-touch-icon" href="/questora/icons/icon-192x192.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Questora" />
